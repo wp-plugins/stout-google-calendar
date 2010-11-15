@@ -108,7 +108,6 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 = 1.0.2 - 2010-11-15 =
 *   Fixed issue with not being able to save to database because database table name was hardcoded instead of using `$wpdb->prefix`
 
-
 = 1.0.1 - 2010-11-02 =
 *   Fixed issue with iframe transparency in IE
 *   Fixed issue with button position in admin
