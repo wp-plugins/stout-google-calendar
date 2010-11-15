@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: google, calendar, custom, colors, embed, widget, admin
 Requires at least: 3.0
 Tested up to: 3.0.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 Stout Google Calendar allows you to add and customize the colors and options of embedded Google Calendars directly within the WordPress admin.
 
@@ -24,8 +24,6 @@ Features include:
 
 == Installation ==
 
-Enough about what it does, here's how you do it:
-
 1. Download the plugin zip file `stout-google-calendar.zip`.
 1. Unzip and upload the `stout-google-calendar` folder to the `/wp-content/plugins/` directory. Or, you may go to 'Plugins > Add New' in the WordPress menu. 'Upload' the `stout-google-calendar.zip` file or 'Search' for "Stout Google Calendar".
 1. Activate the plugin through the 'Plugins' menu in WordPress
@@ -41,7 +39,7 @@ Enough about what it does, here's how you do it:
 *   PHP 4.3.0 or later
 *   Support for one of the following JSON libraries:
  *   [PECL JSON extension](http://pecl.php.net/package/json) (built in to PHP 5.2.0 and higher) *or*
- *   [PEAR::Services_JSON](http://pear.php.net/package/Services_JSON package
+ *   [PEAR::Services_JSON](http://pear.php.net/package/Services_JSON package)
 *   Support for one of the following http methods:
  *  	[cURL extension](http://www.php.net/manual/en/curl.installation.php) *or*
  *   [allow_url_fopen](http://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-fopen) configuration option
@@ -81,7 +79,7 @@ Well, there may be a few things going on. There are some server requirements whi
 *   PHP 4.3.0 or later
 *   Support for one of the following JSON libraries:
  *   [PECL JSON extension](http://pecl.php.net/package/json) (built in to PHP 5.2.0 and higher) *or*
- *   [PEAR::Services_JSON](http://pear.php.net/package/Services_JSON package
+ *   [PEAR::Services_JSON](http://pear.php.net/package/Services_JSON package)
 *   Support for one of the following http methods:
  *  	[cURL extension](http://www.php.net/manual/en/curl.installation.php) *or*
  *   [allow_url_fopen](http://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-fopen) configuration option
@@ -103,6 +101,10 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 
 == Changelog ==
 
+= 1.0.2 - 2010-11-15 =
+*   Fixed issue with not being able to save to database because database table name was hardcoded instead of using `$wpdb->prefix`
+
+
 = 1.0.1 - 2010-11-02 =
 *   Fixed issue with iframe transparency in IE
 *   Fixed issue with button position in admin
@@ -114,6 +116,9 @@ Initial Release
 
 
 == Upgrade Notice ==
+= 1.0.2 - 2010-11-15 =
+Required upgrade in order for the Stout Google Calendar to work with custom named WordPress Database Table prefix.
+
 = 1.0.1 - 2010-11-02 =
 Minor bug fixes
 
