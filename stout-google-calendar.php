@@ -3,7 +3,7 @@
 	Plugin Name: Stout Google Calendar
 	Plugin URI: http://blog.stoutdesign.com/stout-google-calendar-custom-colors
 	Description: Allows you to customize the colors of embedded Google calendars and update its options through the WordPress admin. Customized Google Calendars may be embedded to your WordPress site by adding a widget, shortcode to a post/page or template tag to your theme.
-	Version: 1.0.1
+	Version: 1.0.2
 	Author: Matt McKenny
 	Author URI: http://www.stoutdesign.com
 	License: GPL2
@@ -27,11 +27,14 @@
 */
 
 // Create table for Google calendar data and colors
+global $sgc_db_version; 
+$sgc_db_version = "1.0"; 
 
 function sgc_install(){
 	global $wpdb;
+	global $sgc_db_version; 
+	
 	$sgc_table = $wpdb->prefix . "stoutgc";
-	$sgc_db_version = "1.0"; 
 	
 	// Check to see if table exists
 	if($wpdb->get_var("SHOW TABLES LIKE '$sgc_table'") != $sgc_table) {
@@ -55,7 +58,7 @@ function sgc_install(){
 
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
-		add_option("stoutgc_db_version", "1.0");
+		add_option("stoutgc_db_version", $sgc_db_version);
 	}	
 }
 
@@ -89,6 +92,7 @@ function sgc_menu(){
 
 function sgc_plugin_options(){
 	global $wpdb;
+	$sgc_table = $wpdb->prefix . "stoutgc";
 	
 	//must check that the user has the required capability 
 	if (!current_user_can('manage_options'))
@@ -107,21 +111,21 @@ function sgc_plugin_options(){
 			// we're updating a record
 			if(isset($_POST['update_record']) && $_POST['update_record'] == 'Y'){
 				 	global $wpdb;
-					$wpdb->update( 'wp_stoutgc', array( 'name' => $_POST['name'], 'googlecalcode' => $_POST['googlecalcode'], 'bkgrdImage' => $_POST['bkgrdImage'], 'bkgrdTransparent' => $_POST['bkgrdTransparent'], 'color0' => $_POST['color0'], 'color1' => $_POST['color1'], 'color2' => $_POST['color2'], 'color3' => $_POST['color3'], 'color4' => $_POST['color4'], 'color5' => $_POST['color5'], 'color6' => $_POST['color6'] ), array('id' => $_POST['id']), array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ), array( '%d') );	
+					$wpdb->update( $sgc_table, array( 'name' => $_POST['name'], 'googlecalcode' => $_POST['googlecalcode'], 'bkgrdImage' => $_POST['bkgrdImage'], 'bkgrdTransparent' => $_POST['bkgrdTransparent'], 'color0' => $_POST['color0'], 'color1' => $_POST['color1'], 'color2' => $_POST['color2'], 'color3' => $_POST['color3'], 'color4' => $_POST['color4'], 'color5' => $_POST['color5'], 'color6' => $_POST['color6'] ), array('id' => $_POST['id']), array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ), array( '%d') );	
 					// Put a settings updated message on the screen
 					$msg .=  __( 'Settings saved for calendar: '.$_POST['name'].'.', 'sgc-settings-saved' );
 			
 			//we're creating a new record													
 			} elseif(isset($_POST[ 'new_record' ]) && $_POST[ 'new_record' ] == 'Y' ) {
 					global $wpdb;
-					$wpdb->insert( 'wp_stoutgc', array( 'name' => $_POST['name'], 'googlecalcode' => $_POST['googlecalcode'], 'bkgrdImage' => $_POST['bkgrdImage'], 'bkgrdTransparent' => $_POST['bkgrdTransparent'], 'color0' => $_POST['color0'], 'color1' => $_POST['color1'], 'color2' => $_POST['color2'], 'color3' => $_POST['color3'], 'color4' => $_POST['color4'], 'color5' => $_POST['color5'], 'color6' => $_POST['color6'] ), array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ) );
+					$wpdb->insert( $sgc_table, array( 'name' => $_POST['name'], 'googlecalcode' => $_POST['googlecalcode'], 'bkgrdImage' => $_POST['bkgrdImage'], 'bkgrdTransparent' => $_POST['bkgrdTransparent'], 'color0' => $_POST['color0'], 'color1' => $_POST['color1'], 'color2' => $_POST['color2'], 'color3' => $_POST['color3'], 'color4' => $_POST['color4'], 'color5' => $_POST['color5'], 'color6' => $_POST['color6'] ), array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ) );
 					// Put a settings saved message on the screen
 					$msg .=  __( 'Calendar successfully created: '.$_POST['name'].'.', 'sgc-settings-saved' );
 		
 			//we're deleting a calendar
 			} elseif(isset($_POST[ 'delete_record' ]) && $_POST[ 'delete_record' ] == 'Y' ) {
 						global $wpdb;
-						$wpdb->query( "DELETE FROM wp_stoutgc WHERE `id` = $_POST[id] LIMIT 1" );
+						$wpdb->query( "DELETE FROM $sgc_table WHERE `id` = $_POST[id] LIMIT 1" );
 						// Put a settings saved message on the screen
 						$msg .=  __( 'Calendar deleted: '.$_POST['name'].'.', 'sgc-settings-saved' );
 			}
@@ -234,7 +238,7 @@ function sgc_plugin_options(){
 	echo "<h2 class='sgc-subhead saved-calendars'>" . __( 'Saved Calendars', 'sgc-saved-calendars' ) . "</h2>";
 
 	//Check for existing records
-	$calendars = $wpdb->get_results("SELECT * FROM wp_stoutgc ORDER BY id ASC");
+	$calendars = $wpdb->get_results("SELECT * FROM $sgc_table ORDER BY id ASC");
 
 	foreach ($calendars as $calendar) {
 ?>
@@ -358,14 +362,15 @@ add_shortcode('stout_gc', 'stout_gc_func');
 //Display calendar	
 function stout_gc($cal, $showName = 'FALSE'){
 	global $wpdb;
-	
+	$sgc_table = $wpdb->prefix . "stoutgc";
+
 	$errors = '';
 	
 	//Check to see if valid calendar specified
 	if(!in_array($cal,range(0,10000))){
 		$errors[] = ('Invalid calendar specified.');
 	}else{
-		$calendar = $wpdb->get_row("SELECT * FROM wp_stoutgc WHERE id = $cal");
+		$calendar = $wpdb->get_row("SELECT * FROM $sgc_table WHERE id = $cal");
 		$calcode = stripslashes($calendar->googlecalcode);
 		$calname = stripslashes($calendar->name); 
 	}	
