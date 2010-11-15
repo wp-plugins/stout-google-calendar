@@ -1,7 +1,11 @@
 <?php
 
 /**
- * Embedded Google Calendar customization wrapper script created by Chris Dornfeld <dornfeld (at) unitz.com>
+ * Embedded Google Calendar customization wrapper script created by:
+ * @author      Chris Dornfeld <dornfeld (at) unitz.com>
+ * @version     $Id: gcalendar-wrapper.php 1571 2010-11-15 07:08:05Z dornfeld $
+ * @link        http://www.unitz.com/gcalendar-wrapper/
+ *
  * Extended and adapted for the Stout Google Calendar WordPress plugin by Matt McKenny <sgc (at) stoutdesign.com>
  * Applies a custom color scheme to an embedded Google Calendar.
  *
@@ -11,7 +15,7 @@
  * For normal use, no changes are needed below this line
  */
 
-define('GOOGLE_CALENDAR_BASE', 'http://www.google.com/');
+define('GOOGLE_CALENDAR_BASE', 'https://www.google.com/');
 define('GOOGLE_CALENDAR_EMBED_URL', GOOGLE_CALENDAR_BASE . 'calendar/embed');
 
 /**
@@ -215,18 +219,19 @@ $calCustomStyle = '<style type="text/css">'.$calCustomStyle.'</style>';
 
 $calRaw = '';
 if (in_array('curl', get_loaded_extensions())) {
-	 //counter for retry attempts
-	 $i = 1;
-	//Let's act like a request has been made and returned error 302 so we process first attempt
-	 $status['http_code'] = '302';
-	// Retry as long as 302 error returned but limit it to 10 total tries
-	while (($status['http_code'] == '302') AND ($i <= 10)) {
-		$curlObj = curl_init();
-		curl_setopt($curlObj, CURLOPT_URL, $calUrl);
-		curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
-		if (function_exists('curl_version')) {
-			$curlVer = curl_version();
-			if (is_array($curlVer) && !empty($curlVer['version']) &&
+	$curlObj = curl_init();
+	curl_setopt($curlObj, CURLOPT_URL, $calUrl);
+	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+	// trust any SSL certificate (we're only retrieving public data)
+	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, FALSE);
+	curl_setopt($curlObj, CURLOPT_SSL_VERIFYHOST, FALSE);
+	if (function_exists('curl_version')) {
+		$curlVer = curl_version();
+		if (is_array($curlVer)) {
+			if (!in_array('https', $curlVer['protocols'])) {
+				trigger_error("Can't use https protocol with cURL to retrieve Google Calendar", E_USER_ERROR);
+			}
+			if (!empty($curlVer['version']) &&
 				version_compare($curlVer['version'], '7.15.2', '>=') &&
 				!ini_get('open_basedir') && !ini_get('safe_mode')) {
 				// enable HTTP redirect following for cURL:
@@ -237,33 +242,24 @@ if (in_array('curl', get_loaded_extensions())) {
 				curl_setopt($curlObj, CURLOPT_FOLLOWLOCATION, 1);
 				curl_setopt($curlObj, CURLOPT_MAXREDIRS, 5);
 			}
-		
-			//Get http_code from response
-			$calRaw = curl_exec($curlObj);
-			$status = curl_getinfo($curlObj);
-			curl_close($curlObj);
-			//echo '<br>'.$i++.'-';
-			//echo $status['http_code'];
 		}
 	}
-
+	$calRaw = curl_exec($curlObj);
+	curl_close($curlObj);
 } else if (ini_get('allow_url_fopen')) {
-	// fopen should follow HTTP redirects in recent versions
-	//counter for retry attempts
-	$i = 1;
-	//Let's act like a request has been made and returned error 302 so we process first attempt
-	$meta[0] = 'HTTP/1.0 302 Moved Temporarily';
-	// Retry as long as 302 error returned but limit it to 10 total tries
-	while (($meta[0] == 'HTTP/1.0 302 Moved Temporarily') AND ($i <= 10)) {
-		$fp = fopen($calUrl, 'r');
-		while (!feof($fp)) {
-			$calRaw .= fread($fp, 8192);
+	if (function_exists('stream_get_wrappers')) {
+		if (!in_array('https', stream_get_wrappers())) {
+			trigger_error("Can't use https protocol with fopen to retrieve Google Calendar", E_USER_ERROR);
 		}
-		//Get response
-		$meta = stream_get_meta_data($fp);
-		fclose($fp);
+	} else if (!in_array('openssl', get_loaded_extensions())) {
+		trigger_error("Can't use https protocol with fopen to retrieve Google Calendar", E_USER_ERROR);
 	}
-	
+	// fopen should follow HTTP redirects in recent versions
+	$fp = fopen($calUrl, 'r');
+	while (!feof($fp)) {
+		$calRaw .= fread($fp, 8192);
+	}
+	fclose($fp);
 } else {
 	trigger_error("Can't use cURL or fopen to retrieve Google Calendar", E_USER_ERROR);
 }
@@ -296,7 +292,7 @@ if (preg_match("/$calSettingsPattern/", $calCustomized, $matches)) {
 	if (!function_exists('json_encode')) {
 		// no built-in JSON support, attempt to use PEAR::Services_JSON library
 		if (!class_exists('Services_JSON')) {
-			require_once('JSON.php');
+			require_once('Services/JSON.php');
 		}
 		$pearJson = new Services_JSON();
 	}
@@ -328,3 +324,5 @@ if (preg_match("/$calSettingsPattern/", $calCustomized, $matches)) {
 
 header('Content-type: text/html');
 print $calCustomized;
+
+?>
