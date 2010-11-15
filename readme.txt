@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: google, calendar, custom, colors, embed, widget, admin
 Requires at least: 3.0
 Tested up to: 3.0.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 
 Stout Google Calendar allows you to add and customize the colors and options of embedded Google Calendars directly within the WordPress admin.
 
@@ -39,7 +39,7 @@ Features include:
 *   PHP 4.3.0 or later
 *   Support for one of the following JSON libraries:
  *   [PECL JSON extension](http://pecl.php.net/package/json) (built in to PHP 5.2.0 and higher) *or*
- *   [PEAR::Services_JSON](http://pear.php.net/package/Services_JSON package)
+ *   [PEAR::Services_JSON](http://pear.php.net/package/Services_JSON) package
 *   Support for one of the following http methods:
  *  	[cURL extension](http://www.php.net/manual/en/curl.installation.php) *or*
  *   [allow_url_fopen](http://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-fopen) configuration option plus OpenSSL support
@@ -79,7 +79,7 @@ Well, there may be a few things going on. There are some server requirements whi
 *   PHP 4.3.0 or later
 *   Support for one of the following JSON libraries:
  *   [PECL JSON extension](http://pecl.php.net/package/json) (built in to PHP 5.2.0 and higher) *or*
- *   [PEAR::Services_JSON](http://pear.php.net/package/Services_JSON package)
+ *   [PEAR::Services_JSON](http://pear.php.net/package/Services_JSON) package
 *   Support for one of the following http methods:
  *  	[cURL extension](http://www.php.net/manual/en/curl.installation.php) *or*
  *   [allow_url_fopen](http://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-fopen) configuration option plus OpenSSL support
@@ -101,6 +101,9 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 
 == Changelog ==
 
+= 1.0.4 - 2010-11-15 =
+*   Updated widget code to use `$wpdb->prefix` as corrected in 1.0.2
+
 = 1.0.3 - 2010-11-15 =
 *   Updated `gcalendar-wrapper.php` script with latest version (version 2010-11-15) from [Chris Dornfield](http://www.unitz.com/u-notez/2009/04/color-customization-for-embedded-google-calendars/) which fixes issue with calendar(s) loading. Now requires PHP OpenSSL
 
@@ -119,6 +122,9 @@ Initial Release
 
 
 == Upgrade Notice ==
+
+= 1.0.4 - 2010-11-15 =
+Upgrade to fix issue with widget and custom named WordPress Database Table prefix
 
 = 1.0.3 - 2010-11-15 =
 Upgrade required to ensure calendars load. `gcalendar-wrapper.php` script updated as result of change by Google. Requires PHP OpenSSL.

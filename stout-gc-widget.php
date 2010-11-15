@@ -3,6 +3,8 @@
  *  This is the widget for the Stout Google Calendar plugin
  */
 
+$sgc_table = $wpdb->prefix . "stoutgc";
+
 /**
  * Add function to widgets_init that'll load our widget.
  * @since 0.1
@@ -50,7 +52,7 @@ class Stout_GC_Widget extends WP_Widget {
 		
 		/* Our variables from the widget settings. */
 		$id = $instance['id'];
-		$calendars = $wpdb->get_results("SELECT id,name FROM wp_stoutgc WHERE id = $id LIMIT 1");
+		$calendars = $wpdb->get_results("SELECT id,name FROM $sgc_table WHERE id = $id LIMIT 1");
 		foreach ($calendars as $calendar) {
 			$title = apply_filters('widget_title', $calendar->name);
 		}
@@ -94,7 +96,7 @@ class Stout_GC_Widget extends WP_Widget {
 		
 		//build select options
 		global $wpdb;
-		$calendars = $wpdb->get_results("SELECT * FROM wp_stoutgc ORDER BY id");
+		$calendars = $wpdb->get_results("SELECT * FROM $sgc_table ORDER BY id");
 		$select_options = '';
 		foreach ($calendars as $calendar) {
 			$select_options .= '<option value='.$calendar->id;
