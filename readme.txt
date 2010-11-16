@@ -101,6 +101,10 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 
 == Changelog ==
 
+= 1.0.5 - 2010-11-15 =
+*   Fixed typo in widget code to use `$wpdb->prefix` correctly
+*   Updated screenshots
+
 = 1.0.4 - 2010-11-15 =
 *   Updated widget code to use `$wpdb->prefix` as corrected in 1.0.2
 
@@ -122,6 +126,9 @@ Initial Release
 
 
 == Upgrade Notice ==
+
+= 1.0.5 - 2010-11-15 =
+Upgrade to fix issue with widget and custom named WordPress Database Table prefix (v 1.0.4 incorrect)
 
 = 1.0.4 - 2010-11-15 =
 Upgrade to fix issue with widget and custom named WordPress Database Table prefix
