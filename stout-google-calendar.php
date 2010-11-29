@@ -26,10 +26,11 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-// Create table for Google calendar data and colors
+global $msg; 
 global $sgc_db_version; 
-$sgc_db_version = "1.0"; 
+$sgc_db_version = "1.0";
 
+// Create table for Google calendar data and colors
 function sgc_install(){
 	global $wpdb;
 	global $sgc_db_version; 
@@ -69,9 +70,6 @@ register_activation_hook(__FILE__,'sgc_install');
 function my_plugin_admin_init() {
 	/* Register our script. */
   wp_enqueue_script('colorpickerapp', WP_PLUGIN_URL . '/stout-google-calendar/colorpicker.js');
-	wp_enqueue_script('colorpickereye', WP_PLUGIN_URL . '/stout-google-calendar/eye.js');
-	wp_enqueue_script('colorpickerutils', WP_PLUGIN_URL . '/stout-google-calendar/utils.js');
-	wp_enqueue_script('colorpickerlayout', WP_PLUGIN_URL . '/stout-google-calendar/layout.js');
 	wp_enqueue_script('jquery-ui-dialog'); 
 	wp_enqueue_script('jquery-plugin-validation', 'http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js');  
 	wp_enqueue_script('stout_gc', WP_PLUGIN_URL . '/stout-google-calendar/stout_gc.js');
@@ -226,6 +224,13 @@ function sgc_plugin_options(){
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTabs" id="showTabs0" /></td><td><label for="showTabs0">Show Tabs?</label></td></tr>
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showCalendars" id="showCalendars0" /></td><td><label for="showCalendars0">Show Calendars?</label></td></tr>
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTz" id="showTz0" /></td><td><label for="showTz0">Show Timezone?</label></td></tr>
+				<tr class="no-background">
+					<td colspan="2">Language<br />
+					<select id="hl0" class="calLanguage">
+						<?php include "hl.php"; ?>
+					</select>
+					</td>
+				</tr>
 			</table>
 		</div>
 		<p class="submit-new"><input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Add Calendar') ?>" /></p>
@@ -319,6 +324,13 @@ function sgc_plugin_options(){
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTabs" id="showTabs<?php echo $calendar->id; ?>" /></td><td><label for="showTabs<?php echo $calendar->id; ?>">Show Tabs?</label></td></tr>
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showCalendars" id="showCalendars<?php echo $calendar->id; ?>" /></td><td><label for="showCalendars<?php echo $calendar->id; ?>">Show Calendars?</label></td></tr>
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTz" id="showTz<?php echo $calendar->id; ?>" /></td><td><label for="showTz<?php echo $calendar->id; ?>">Show Timezone?</label></td></tr>
+				<tr class="no-background">
+					<td colspan="2">Language<br />
+					<select id="hl<?php echo $hidden_field_name; ?>" class="calLanguage">
+						<?php include "hl.php"; ?>
+					</select>
+					</td>
+				</tr>
 			</table>
 			</div>
 			<p class="submit-update" ><input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Update Calendar') ?>" /></p>
@@ -351,8 +363,6 @@ function stout_gc_func($atts) {
 		'id' => '1',
 		'show_name' => 'FALSE'
 	), $atts));
-
-	//return "id = {$id}";
 	return stout_gc($id,$show_name);
 }
 
@@ -384,7 +394,7 @@ function stout_gc($cal, $showName = 'FALSE'){
 	}
 
 	// Get the width of iframe from google embed code
-	$iframe_width = preg_match('/width="(\d+)"/',$calcode,$matches);
+	$iframe_width = preg_match('/width="(\d+\W?)"/',$calcode,$matches);
 	if($matches[1] != ''){
 		$iframe_width = $matches[1];
 	}else{
@@ -392,7 +402,7 @@ function stout_gc($cal, $showName = 'FALSE'){
 	}
 
 	// Get the width of iframe from google embed code
-	$iframe_height = preg_match('/height="(\d+)"/',$calcode,$matches);
+	$iframe_height = preg_match('/height="(\d+\W?)"/',$calcode,$matches);
 	if($matches[1] != ''){
 		$iframe_height = $matches[1];
 	}else{
@@ -401,24 +411,26 @@ function stout_gc($cal, $showName = 'FALSE'){
 
 	// Get the width of iframe from google embed code
 	$iframe_border = preg_match('/border:(\w+ \w+ #\w+)/',$calcode,$matches);
-	if($matches[1] != ''){
-		$iframe_border = $matches[1];
-	}else{
-		//no border
-		$iframe_border  = '0';
+	if (count($matches) > 1) {
+		if($matches[1] != ''){
+			$iframe_border = $matches[1];
+		}else{
+			//no border
+			$iframe_border  = '0';
+		}
 	}
 	
 		
 	if($errors != ''){
 		$errors = '<div style="padding:10px;border:1px solid red;color:red">'.$errors[0];
-		if( $_SERVER['QUERY_STRING'] == 'page=stout-gc') { $errors .= '<br /><a href="#" class="sgc-form-toggle">Show Calendar Editor</a>'; }
+		if( is_admin() ) { $errors .= '<br /><a href="#" class="sgc-form-toggle">Show Calendar Editor</a>'; }
 		$errors .= '</div>';
 		return $errors;
 	}else{
 		//build src
 		$src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php'.$calquery.'&sgc0='.$calendar->color0.'&sgc1='.$calendar->color1.'&sgc2='.$calendar->color2.'&sgc3='.$calendar->color3.'&sgc4='.$calendar->color4.'&sgc5='.$calendar->color5.'&sgc6='.$calendar->color6.'&sgcImage='.$calendar->bkgrdImage.'&sgcBkgrdTrans='.$calendar->bkgrdTransparent.'&wpurl='.WP_PLUGIN_URL;
 		
-		if( $_SERVER['QUERY_STRING'] == 'page=stout-gc' ) {
+		if( is_admin() ) {
 			//in preview mode (admin)
 			$preview = '
 			<div id="sgc_preview_wrapper'.$cal.'">
