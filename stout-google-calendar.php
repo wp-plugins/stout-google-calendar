@@ -326,7 +326,7 @@ function sgc_plugin_options(){
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTz" id="showTz<?php echo $calendar->id; ?>" /></td><td><label for="showTz<?php echo $calendar->id; ?>">Show Timezone?</label></td></tr>
 				<tr class="no-background">
 					<td colspan="2">Language<br />
-					<select id="hl<?php echo $hidden_field_name; ?>" class="calLanguage">
+					<select id="hl<?php echo $calendar->id; ?>" class="calLanguage">
 						<?php include "hl.php"; ?>
 					</select>
 					</td>
