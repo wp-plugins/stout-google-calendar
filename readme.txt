@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: stoutdesign
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8Y6HL2PMLPQXA
-Tags: google, calendar, custom, colors, embed, widget, admin
+Tags: google, calendar, custom, colors, embed, widget, admin, plugin, sidebar
 Requires at least: 3.0
-Tested up to: 3.0.1
-Stable tag: 1.0.5
+Tested up to: 3.0.2
+Stable tag: 1.0.7
 
 Stout Google Calendar allows you to add and customize the colors and options of embedded Google Calendars directly within the WordPress admin.
 
@@ -50,7 +50,7 @@ Features include:
 
 = Why the Stout Google Calendar plugin? =
 
-Basically, we really dislike the default colors of embedded Google Calendars - at least how they look on 99.9% of the sites we develop. We went in search of a workaround and found the great [gcalendar-wrapper.php](http://www.unitz.com/u-notez/2009/04/color-customization-for-embedded-google-calendars/) script by Chris Dornfield. After giving it a test run we thought it would be really cool to have a WordPress plugin that allowed us to easily manage calendars with customized color schemes from within WordPress. We modified the gcalendar-wrapper script, whipped up some code, added a dash of AJAXy goodness to the admin page and, voila!, the Stout Google Calendar plugin was created.
+Basically, we really dislike the default colors of embedded Google Calendars - at least how they look on 99.9% of the sites we develop. We went in search of a workaround and found the great [gcalendar-wrapper.php](http://www.unitz.com/u-notez/2009/04/color-customization-for-embedded-google-calendars/) script by Chris Dornfeld. After giving it a test run we thought it would be really cool to have a WordPress plugin that allowed us to easily manage calendars with customized color schemes from within WordPress. We modified the gcalendar-wrapper script, whipped up some code, added a dash of AJAXy goodness to the admin page and, voila!, the Stout Google Calendar plugin was created.
 
 = How do I know what is changed by each color choice? =
 
@@ -87,7 +87,7 @@ Well, there may be a few things going on. There are some server requirements whi
 
 = Who is responsible for this plugin? =
 
-In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://blog.stoutdesign.com/stout-google-calendar-custom-colors) WordPress plugin (admin interface, widget, shortcode, etc), Chris Dornfield for the [gcalendar-wrapper.php script](http://www.unitz.com/u-notez/2009/04/color-customization-for-embedded-google-calendars) that modifies the Google Calendar CSS, and Stefan Petre for the [jQuery Color Picker](http://www.eyecon.ro/colorpicker/) used in the admin.
+In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://blog.stoutdesign.com/stout-google-calendar-custom-colors) WordPress plugin (admin interface, widget, shortcode, etc), Chris Dornfeld for the [gcalendar-wrapper.php script](http://www.unitz.com/u-notez/2009/04/color-customization-for-embedded-google-calendars) that modifies the Google Calendar CSS, and Stefan Petre for the [jQuery Color Picker](http://www.eyecon.ro/colorpicker/) used in the admin.
 
 == Screenshots ==
 
@@ -101,6 +101,15 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 
 == Changelog ==
 
+= 1.0.7 - 2010-12-01 =
+*   Fixed incorrect path to JSON.php file
+
+= 1.0.6 - 2010-11-29 =
+*   Added "language" option to set language for calendar to be displayed in
+*   Fixed issue with a second window in Firefox being brought in front of the active Firefox window every time a form submitted or link clicked in the admin (removed colorpicker's eye.js, utils.js and layout.js). 
+*   Fixed error caused by undefined $msg variable and issue when trying to match border. Thanks [Jeff Lambert](http://webphysiology.com/)
+*   Corrected misspelled name for Chris Dornfeld in credits - sorry Chris!
+
 = 1.0.5 - 2010-11-15 =
 *   Fixed typo in widget code to use `$wpdb->prefix` correctly
 *   Updated screenshots
@@ -109,8 +118,7 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 *   Updated widget code to use `$wpdb->prefix` as corrected in 1.0.2
 
 = 1.0.3 - 2010-11-15 =
-*   Updated `gcalendar-wrapper.php` script with latest version (version 2010-11-15) from [Chris Dornfield](http://www.unitz.com/u-notez/2009/04/color-customization-for-embedded-google-calendars/) which fixes issue with calendar(s) loading. Now requires PHP OpenSSL
-
+*   Updated `gcalendar-wrapper.php` script with latest version (version 2010-11-15) from [Chris Dornfeld](http://www.unitz.com/u-notez/2009/04/color-customization-for-embedded-google-calendars/) which fixes issue with calendar(s) loading. Now requires PHP OpenSSL
 
 = 1.0.2 - 2010-11-15 =
 *   Fixed issue with not being able to save to database because database table name was hardcoded instead of using `$wpdb->prefix`
@@ -126,6 +134,12 @@ Initial Release
 
 
 == Upgrade Notice ==
+
+= 1.0.7 - 2010-12-01 =
+Upgrade to fix issue if getting error messages because JSON.php file cannot be included.
+
+= 1.0.6 - 2010-11-15 =
+Upgrade to fix issue with inactive browser window being brought in front of active window while in admin. 
 
 = 1.0.5 - 2010-11-15 =
 Upgrade to fix issue with widget and custom named WordPress Database Table prefix (v 1.0.4 incorrect)
