@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: google, calendar, custom, colors, embed, widget, admin, plugin, sidebar
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 
 Stout Google Calendar allows you to add and customize the colors and options of embedded Google Calendars directly within the WordPress admin.
 
@@ -101,6 +101,9 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 
 == Changelog ==
 
+= 1.0.9 - 2011-01-26 =
+*		Strip slashes from the calendar name admin settings for Stout Google Calendar 
+
 = 1.0.8 - 2011-01-26 =
 *   Set event "bubble"/popup overlays to 80% calendar width. Prevents details from being clipped if calendar width is under 400px in month view.
 *		Strip slashes from the calendar name in the widget admin and widget display on pages 
@@ -138,6 +141,9 @@ Initial Release
 
 
 == Upgrade Notice ==
+
+= 1.0.9 - 2011-01-26 =
+Fixes issue of slashes appearing in the calendar name in admin settings for Stout Google Calendar 
 
 = 1.0.8 - 2011-01-26 =
 Upgrade fixes issue of slashes appearing in calendar name in widgets.
