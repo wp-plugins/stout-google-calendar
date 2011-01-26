@@ -247,14 +247,14 @@ function sgc_plugin_options(){
 
 	foreach ($calendars as $calendar) {
 ?>
-	<h3 class="sgc-name"><?php echo $calendar->name; ?> <br /><span style="font-size:smaller;font-weight:normal">Shortcode: <code>[stout_gc id=<?php echo $calendar->id; ?>]</code><br />Template Tag: <code>&lt;?php echo stout_gc(<?php echo $calendar->id; ?>); ?&gt;</code></span></h3> <?php echo stout_gc($calendar->id,FALSE,TRUE); ?>
+	<h3 class="sgc-name"><?php echo stripslashes($calendar->name); ?> <br /><span style="font-size:smaller;font-weight:normal">Shortcode: <code>[stout_gc id=<?php echo $calendar->id; ?>]</code><br />Template Tag: <code>&lt;?php echo stout_gc(<?php echo $calendar->id; ?>); ?&gt;</code></span></h3> <?php echo stout_gc($calendar->id,FALSE,TRUE); ?>
 	<div id="calendar-<?php echo $calendar->id; ?>" class="sgc-form-wrapper">
 		<form name="form1" method="post" action="" id="sgc-form<?php echo $calendar->id; ?>">
 		<div class="sgc-name-code">
 			<input type="hidden" name="<?php echo $hidden_field_name; ?>" value="Y" />
 			<input type="hidden" name="id" value="<?php echo $calendar->id; ?>" />
 			<input type="hidden" name="update_record" value="Y" />
-			<p><?php _e("Calendar Name:", 'sgc-calendar-name' ); ?><br /><input type="text" name="name" value="<?php echo $calendar->name; ?>" class="required" size="50" /></p>
+			<p><?php _e("Calendar Name:", 'sgc-calendar-name' ); ?><br /><input type="text" name="name" value="<?php echo stripslashes($calendar->name); ?>" class="required" size="50" /></p>
 			<p><?php _e("Google Calendar iframe embed code:", 'sgc-google-embed-code' ); ?><br /><textarea name="googlecalcode" cols="44" rows="15" class="required sgccode" id="sgccode<?php echo $calendar->id; ?>"><?php echo stripslashes($calendar->googlecalcode); ?></textarea></p>
 		</div>	
 		<div class="sgc-pickers">
