@@ -105,6 +105,9 @@ td#timezone {
 	color: {$calColorTextOnDark} !important;
 }
 
+/* ensures more info bubble display in their entirety in calendars smaller than 400px wide */
+div.bubble {width: 80% !important;} 
+
 /* tabs */
 td#calendarTabs1 div.ui-rtsr-selected,
 div.view-cap,
@@ -292,7 +295,7 @@ if (preg_match("/$calSettingsPattern/", $calCustomized, $matches)) {
 	if (!function_exists('json_encode')) {
 		// no built-in JSON support, attempt to use PEAR::Services_JSON library
 		if (!class_exists('Services_JSON')) {
-			require_once('Services/JSON.php');
+			require_once('JSON.php');
 		}
 		$pearJson = new Services_JSON();
 	}
