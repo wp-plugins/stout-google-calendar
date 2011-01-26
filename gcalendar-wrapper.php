@@ -105,6 +105,9 @@ td#timezone {
 	color: {$calColorTextOnDark} !important;
 }
 
+/* ensures more info bubble display in their entirety in calendars smaller than 400px wide */
+div.bubble {width: 80% !important;} 
+
 /* tabs */
 td#calendarTabs1 div.ui-rtsr-selected,
 div.view-cap,
