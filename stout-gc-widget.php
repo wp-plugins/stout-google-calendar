@@ -53,7 +53,7 @@ class Stout_GC_Widget extends WP_Widget {
 		$id = $instance['id'];
 		$calendars = $wpdb->get_results("SELECT id,name FROM $sgc_table WHERE id = $id LIMIT 1");
 		foreach ($calendars as $calendar) {
-			$title = apply_filters('widget_title', $calendar->name);
+			$title = stripslashes(apply_filters('widget_title', $calendar->name));
 		}
 		$show_name = isset( $instance['show_name'] ) ? $instance['show_name'] : false;
 
@@ -102,7 +102,7 @@ class Stout_GC_Widget extends WP_Widget {
 		foreach ($calendars as $calendar) {
 			$select_options .= '<option value='.$calendar->id;
 			if ( $instance['id'] == $calendar->id ) { $select_options .= ' selected="selected"'; }
-			$select_options .= ' >'.$calendar->id.' - '.$calendar->name.'</option>';
+			$select_options .= ' >'.$calendar->id.' - '.stripslashes($calendar->name).'</option>';
 		}
 		?>
 

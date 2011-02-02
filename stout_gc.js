@@ -40,7 +40,7 @@ jQuery(document).ready(function($) {
 		var name = $(this).attr('name');
 		var textarea = $('#sgccode'+calId);
 		//get width/height name and value
-		var re = new RegExp('(' + name + '="\\d+")');
+		var re = new RegExp('(' + name + '="\\d+\W?")');
 		var result = re.exec($(textarea).val());
 		
 		//update width or height of embed code text area
@@ -56,7 +56,7 @@ jQuery(document).ready(function($) {
 		var name = $(this).attr('name');
 		var textarea = $('#sgccode'+calId);
 		// just get value of width/height in text area
-		var re = new RegExp(name + '="(\\d+)"');
+		var re = new RegExp(name + '="(\\d+\W?)"');
 		var result = re.exec($(textarea).val());
 		
 		//update width or height of text input
@@ -64,7 +64,7 @@ jQuery(document).ready(function($) {
 			$(this).val(result[1]);
 		}
 	}
-	
+		
 	//Change width or height of embed code and iframe when text input changed
 	$('.sgcWidthOrHeight').change(function(){
 		$(this).setWidthOrHeight();
@@ -74,6 +74,38 @@ jQuery(document).ready(function($) {
 	$('.sgcWidthOrHeight').each(function(){
 		$(this).getWidthOrHeight();
 	});
+	
+	// Function to set bubble width and use % or pixels in iframe
+	$.fn.setBubbleWidth = function() {
+		var calId = $(this).getCalId();
+		var iframe = $('#sgc_iframe_'+ calId);
+		var bubble_value = $(this).val().replace(/\s*%\s*/,'');
+		bubble_value = bubble_value.replace(/\s*px\s*/,'');
+		iframe.attr('src',iframe.attr('src').replace(/bubbleWidth=.*&bubbleUnit/, "bubbleWidth="+bubble_value+"&bubbleUnit"));
+	}
+
+	// Function to set bubble width and use % or pixels in iframe
+	$.fn.setBubbleUnit = function() {
+		var calId = $(this).getCalId();
+		var iframe = $('#sgc_iframe_'+ calId);
+		var re = new RegExp(/%/);
+		var result = re.exec($(this).val());
+		if(result != null){
+			iframe.attr('src',iframe.attr('src').replace(/&bubbleUnit=[a-z]*&/, '&bubbleUnit=percentage&'));
+			$('#sgccode'+calId).refreshPreview();
+		} else {
+			iframe.attr('src',iframe.attr('src').replace(/&bubbleUnit=[a-z]*&/, '&bubbleUnit=pixel&'));
+			$('#sgccode'+calId).refreshPreview();
+		}
+	}
+
+
+	//Change width or height of embed code and iframe when text input changed
+	$('.sgcBubble').change(function(){
+		$(this).setBubbleWidth();
+		$(this).setBubbleUnit();
+	});
+	
 	
 	//Change calendar view mode
 	$('.calMode').change(function(){
@@ -102,10 +134,36 @@ jQuery(document).ready(function($) {
 					$('#mode-agenda'+calId).attr('selected', true);
 				  break;
 				default:
-				$('#mode-month'+calId).attr('selected', true);					
+					$('#mode-month'+calId).attr('selected', true);					
 			}
 		}	else {
 			$('#mode-month'+calId).attr('selected', true);
+		}
+	}
+	
+	//Change calendar language
+	$('.calLanguage').change(function(){
+		var calId = $(this).getCalId();
+		var re = new RegExp(/(hl=[a-zA-Z]+_?[a-zA-Z]+)/);
+		var result = re.exec($('#sgccode'+calId).val());
+		var textarea = $('#sgccode'+calId);
+		if(result != null){
+			textarea.val(textarea.val().replace(result[1], "hl="+$(this).val()));
+		} else {
+			textarea.val(textarea.val().replace(/\?/, "?hl="+$(this).val()+"&"));
+		}
+		//refresh preview
+		$('#sgccode'+calId).refreshPreview();
+	});
+	
+	$.fn.setLanguage = function(calId){
+		var re = new RegExp(/hl=([a-zA-Z]+_?[a-zA-Z]+)/);
+		var result = re.exec($('#sgccode'+calId).val());
+		if(result != null){
+			$('#hl'+ calId + ' option[selected]').removeAttr("selected");
+			$('#hl'+ calId + ' option[value='+result[1]+']').attr("selected", "selected");
+		} else {
+			$('#hl'+ calId + " option[value='']").attr("selected", "selected");
 		}
 	}
 	
@@ -113,6 +171,7 @@ jQuery(document).ready(function($) {
   $('.sgc-pickers').each(function() {
   	var calId = $(this).getCalId();
   	$(this).setViewMode(calId);
+		$(this).setLanguage(calId);
   });
 	
 	//Toggle tabs option
@@ -284,6 +343,9 @@ jQuery(document).ready(function($) {
 				//update view	mode
 				$(this).setViewMode(calId);
 				
+				//update language
+				$(this).setLanguage(calId);
+				
 		  }
 		}
 		
@@ -316,6 +378,14 @@ jQuery(document).ready(function($) {
 				});
 				$("#delete-confirm"+calId).dialog("open");
 			});
+		
+		
+			//update bubble width in all iframe string
+			$('.sgcBubbleSaved').each(function(){
+				$(this).setBubbleWidth();
+				$(this).setBubbleUnit();
+			});
+						
 		
 });
 
