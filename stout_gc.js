@@ -64,7 +64,7 @@ jQuery(document).ready(function($) {
 			$(this).val(result[1]);
 		}
 	}
-	
+		
 	//Change width or height of embed code and iframe when text input changed
 	$('.sgcWidthOrHeight').change(function(){
 		$(this).setWidthOrHeight();
@@ -74,6 +74,38 @@ jQuery(document).ready(function($) {
 	$('.sgcWidthOrHeight').each(function(){
 		$(this).getWidthOrHeight();
 	});
+	
+	// Function to set bubble width and use % or pixels in iframe
+	$.fn.setBubbleWidth = function() {
+		var calId = $(this).getCalId();
+		var iframe = $('#sgc_iframe_'+ calId);
+		var bubble_value = $(this).val().replace(/\s*%\s*/,'');
+		bubble_value = bubble_value.replace(/\s*px\s*/,'');
+		iframe.attr('src',iframe.attr('src').replace(/bubbleWidth=.*&bubbleUnit/, "bubbleWidth="+bubble_value+"&bubbleUnit"));
+	}
+
+	// Function to set bubble width and use % or pixels in iframe
+	$.fn.setBubbleUnit = function() {
+		var calId = $(this).getCalId();
+		var iframe = $('#sgc_iframe_'+ calId);
+		var re = new RegExp(/%/);
+		var result = re.exec($(this).val());
+		if(result != null){
+			iframe.attr('src',iframe.attr('src').replace(/&bubbleUnit=[a-z]*&/, '&bubbleUnit=percentage&'));
+			$('#sgccode'+calId).refreshPreview();
+		} else {
+			iframe.attr('src',iframe.attr('src').replace(/&bubbleUnit=[a-z]*&/, '&bubbleUnit=pixel&'));
+			$('#sgccode'+calId).refreshPreview();
+		}
+	}
+
+
+	//Change width or height of embed code and iframe when text input changed
+	$('.sgcBubble').change(function(){
+		$(this).setBubbleWidth();
+		$(this).setBubbleUnit();
+	});
+	
 	
 	//Change calendar view mode
 	$('.calMode').change(function(){
@@ -346,6 +378,14 @@ jQuery(document).ready(function($) {
 				});
 				$("#delete-confirm"+calId).dialog("open");
 			});
+		
+		
+			//update bubble width in all iframe string
+			$('.sgcBubbleSaved').each(function(){
+				$(this).setBubbleWidth();
+				$(this).setBubbleUnit();
+			});
+						
 		
 });
 

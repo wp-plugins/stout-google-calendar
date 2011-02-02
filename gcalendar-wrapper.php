@@ -45,14 +45,26 @@ preg_match('/sgc6=(\w+)/',$calQuery,$color6);
 preg_match('/sgcBkgrdTrans=(\d)/',$calQuery,$bkgrdTrans);
 preg_match('/sgcImage=(\d+)/',$calQuery,$sgcImage);
 preg_match('/wpurl=(.+)/',$calQuery,$wpurl);
+preg_match('/bubbleWidth=(\d+)/',$calQuery,$bubbleWidth);
+preg_match('/bubbleUnit=([a-z]*)/',$calQuery,$bubbleUnit);
 
-($bkgrdTrans[1] == 0)  ? $calBkgrd = "#".$color0[1] : $calBkgrd = 'transparent';
-($color1[1] != '') ? $calColorBgDark = "#".$color1[1] : $calColorBgDark = '#c3d9ff';
-($color2[1] != '') ? $calColorTextOnDark = "#".$color2[1] : $calColorTextOnDark = '#000000';
-($color3[1] != '') ? $calColorBgLight = "#".$color3[1] : $calColorBgLight = '#e8eef7';
-($color4[1] != '') ? $calColorTextOnLight = "#".$color4[1] : $calColorTextOnLight = '#000000';
-($color5[1] != '') ? $calColorBgToday = "#".$color5[1] : $calColorBgToday = '#ffffcc';
-($color6[1] != '') ? $calBkgrdText = "#".$color6[1] : $calBkgrdText = '#000000';
+$calBkgrd 						= ($bkgrdTrans[1] == 0)  ? "#".$color0[1] : 'transparent';
+$calColorBgDark 			= ($color1[1] != '') ? "#".$color1[1] : '#c3d9ff';
+$calColorTextOnDark 	= ($color2[1] != '') ? "#".$color2[1] : '#000000';
+$calColorBgLight 			= ($color3[1] != '') ? "#".$color3[1] : '#e8eef7';
+$calColorTextOnLight 	=	($color4[1] != '') ? "#".$color4[1] : '#000000';
+$calColorBgToday 			=	($color5[1] != '') ? "#".$color5[1] : '#ffffcc';
+$calBkgrdText 				=	($color6[1] != '') ? "#".$color6[1] : '#000000';
+
+if ($bubbleWidth[1] != '') {
+	$bubbleOutput =	($bubbleUnit[1] == 'percentage') ? $bubbleWidth[1]."%" :$bubbleWidth[1]."px";
+	$bubbleCss = ("div.bubble { width: $bubbleOutput !important;} ");
+}else {
+	$bubbleCss = '';
+}
+
+
+
 $wpurl = $wpurl[1];
 
 switch ($sgcImage[1]) {
@@ -105,8 +117,8 @@ td#timezone {
 	color: {$calColorTextOnDark} !important;
 }
 
-/* ensures more info bubble display in their entirety in calendars smaller than 400px wide */
-div.bubble {width: 80% !important;} 
+/* popup bubble display */
+{$bubbleCss}
 
 /* tabs */
 td#calendarTabs1 div.ui-rtsr-selected,
