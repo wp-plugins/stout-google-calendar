@@ -3,7 +3,7 @@
 	Plugin Name: Stout Google Calendar
 	Plugin URI: http://blog.stoutdesign.com/stout-google-calendar-custom-colors
 	Description: Allows you to customize the colors of embedded Google calendars and update its options through the WordPress admin. Customized Google Calendars may be embedded to your WordPress site by adding a widget, shortcode to a post/page or template tag to your theme.
-	Version: 1.1.0
+	Version: 1.1.1
 	Author: Matt McKenny
 	Author URI: http://www.stoutdesign.com
 	License: GPL2
@@ -353,7 +353,7 @@ function sgc_plugin_options(){
 					<td><input type="text" class="sgcWidthOrHeight" id="height<?php echo $calendar->id; ?>" name="height" value="" size="6"/></td>
 				</tr>
 				<tr>                                                                                          
-					<td><?php _e("Bubble Width:", 'sgc-bubble' ); ?></td>
+					<td><?php _e("Bubble Width:", 'sgc-bubble' ); ?> <br/><span style="font-size:11px;color:gray;white-space:normal;width:140px;display:block"><em>Event detail popup width in month view (px or %); Blank for default; Should be smaller than calendar width</em></span></td>
 					<td><input type="text" class="sgcBubble sgcBubbleSaved"  id="bubble<?php echo $calendar->id; ?>" name="bubble_width" value="<?php echo $calendar->bubble_width; ?>" size="6" /></td>
 				</tr>
 			</table>
@@ -475,7 +475,21 @@ function stout_gc($cal, $showName = 'FALSE'){
 			$iframe_border  = '0';
 		}
 	}
+
+	// Check for Bubble Width and determin % or px
+	$bubble = preg_match('/(%)/',$calendar->bubble_width,$unitMatches);
+	if($unitMatches[1]){
+		$bubbleUnit = 'percentage';
+	}else{
+		$bubbleUnit = 'pixel';
+	}
 	
+	$bubble = preg_match('/(\d+)/',$calendar->bubble_width,$widthMatches);
+	if($widthMatches[1]){
+		$bubbleWidth = $widthMatches[1];
+	}else{
+		$bubbleWidth = '';
+	}
 		
 	if($errors != ''){
 		$errors = '<div style="padding:10px;border:1px solid red;color:red">'.$errors[0];
@@ -484,7 +498,7 @@ function stout_gc($cal, $showName = 'FALSE'){
 		return $errors;
 	}else{
 		//build src
-		$src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php'.$calquery.'&sgc0='.$calendar->color0.'&sgc1='.$calendar->color1.'&sgc2='.$calendar->color2.'&sgc3='.$calendar->color3.'&sgc4='.$calendar->color4.'&sgc5='.$calendar->color5.'&sgc6='.$calendar->color6.'&bubbleWidth='.$calendar->bubble_width.'&bubbleUnit=pixel&sgcImage='.$calendar->bkgrdImage.'&sgcBkgrdTrans='.$calendar->bkgrdTransparent.'&wpurl='.WP_PLUGIN_URL;
+		$src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php'.$calquery.'&sgc0='.$calendar->color0.'&sgc1='.$calendar->color1.'&sgc2='.$calendar->color2.'&sgc3='.$calendar->color3.'&sgc4='.$calendar->color4.'&sgc5='.$calendar->color5.'&sgc6='.$calendar->color6.'&bubbleWidth='.$bubbleWidth.'&bubbleUnit='.$bubbleUnit.'&sgcImage='.$calendar->bkgrdImage.'&sgcBkgrdTrans='.$calendar->bkgrdTransparent.'&wpurl='.WP_PLUGIN_URL;
 		
 		if( is_admin() ) {
 			//in preview mode (admin)
