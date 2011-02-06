@@ -3,7 +3,7 @@
 	Plugin Name: Stout Google Calendar
 	Plugin URI: http://blog.stoutdesign.com/stout-google-calendar-custom-colors
 	Description: Allows you to customize the colors of embedded Google calendars and update its options through the WordPress admin. Customized Google Calendars may be embedded to your WordPress site by adding a widget, shortcode to a post/page or template tag to your theme.
-	Version: 1.0.5
+	Version: 1.1.1
 	Author: Matt McKenny
 	Author URI: http://www.stoutdesign.com
 	License: GPL2
@@ -26,13 +26,16 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-// Create table for Google calendar data and colors
-global $sgc_db_version; 
-$sgc_db_version = "1.0"; 
+global $msg;
+global $sgc_db_version;
+$sgc_db_version = '2.0';
 
+
+// Create table for Google calendar data and colors
 function sgc_install(){
 	global $wpdb;
-	global $sgc_db_version; 
+	global $sgc_db_version;
+	$installed_ver = get_option( "stoutgc_db_version" );
 	
 	$sgc_table = $wpdb->prefix . "stoutgc";
 	
@@ -59,7 +62,32 @@ function sgc_install(){
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
 		add_option("stoutgc_db_version", $sgc_db_version);
-	}	
+	}
+
+	if( $installed_ver != $sgc_db_version ) {
+		//Create table v 2.0
+			$sql = "CREATE TABLE " . $sgc_table . " (
+				id mediumint(9) NOT NULL AUTO_INCREMENT,
+			  name tinytext NOT NULL,
+			  googlecalcode text NOT NULL,
+				color0 varchar(32) NOT NULL,
+				color1 varchar(32) NOT NULL,
+				color2 varchar(32) NOT NULL,
+				color3 varchar(32) NOT NULL,
+				color4 varchar(32) NOT NULL,
+				color5 varchar(32) NOT NULL,
+				color6 varchar(32) NOT NULL,
+				bubble_width varchar(32) NOT NULL,
+				bkgrdTransparent boolean NOT NULL,
+				bkgrdImage mediumint(9) NOT NULL,
+			  UNIQUE KEY id (id)
+			);";
+
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
+		update_option("stoutgc_db_version", $sgc_db_version);
+	}
+
 }
 
 // Create the Table on activation
@@ -67,16 +95,12 @@ register_activation_hook(__FILE__,'sgc_install');
 
 // add scripts and css to admin menu    
 function my_plugin_admin_init() {
-	/* Register our script. */
-  wp_enqueue_script('colorpickerapp', WP_PLUGIN_URL . '/stout-google-calendar/colorpicker.js');
-	wp_enqueue_script('colorpickereye', WP_PLUGIN_URL . '/stout-google-calendar/eye.js');
-	wp_enqueue_script('colorpickerutils', WP_PLUGIN_URL . '/stout-google-calendar/utils.js');
-	wp_enqueue_script('colorpickerlayout', WP_PLUGIN_URL . '/stout-google-calendar/layout.js');
-	wp_enqueue_script('jquery-ui-dialog'); 
-	wp_enqueue_script('jquery-plugin-validation', 'http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js');  
-	wp_enqueue_script('stout_gc', WP_PLUGIN_URL . '/stout-google-calendar/stout_gc.js');
-	wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
-	wp_enqueue_style('stout_gc', WP_PLUGIN_URL . '/stout-google-calendar/stout_gc.css');
+	/* Register our scripts. */
+  wp_register_script('colorpickerapp', WP_PLUGIN_URL . '/stout-google-calendar/colorpicker.js');
+	wp_register_script('jquery-plugin-validation', 'http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js');  
+	wp_register_script('stout_gc', WP_PLUGIN_URL . '/stout-google-calendar/stout_gc.js');
+	wp_register_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
+	wp_register_style('stout_gc', WP_PLUGIN_URL . '/stout-google-calendar/stout_gc.css');
 }
 add_action('admin_init', 'my_plugin_admin_init');
 
@@ -87,8 +111,30 @@ require_once('stout-gc-widget.php');
 add_action('admin_menu','sgc_menu');
 
 function sgc_menu(){
-	add_options_page('Stout Google Calendar', 'Stout Google Calendar', 'manage_options', 'stout-gc', 'sgc_plugin_options' );
+	$page = add_options_page('Stout Google Calendar', 'Stout Google Calendar', 'manage_options', 'stout-gc', 'sgc_plugin_options' );
+   add_action( 'admin_print_styles-' . $page, 'sgc_admin_styles' );
+   add_action( 'admin_print_scripts-' . $page, 'sgc_admin_scripts' );
 }
+
+function sgc_admin_scripts() {
+/*
+	* It will be called only on your plugin admin page
+*/
+  wp_enqueue_script('colorpickerapp');
+	wp_enqueue_script('jquery-ui-dialog'); 
+	wp_enqueue_script('jquery-plugin-validation');  
+	wp_enqueue_script('stout_gc');
+}
+
+function sgc_admin_styles() {
+/*
+	* It will be called only on your plugin admin page, enqueue our stylesheet here
+*/
+	wp_enqueue_style( 'jquery-style' );
+	wp_enqueue_style( 'stout_gc' );
+}
+
+
 
 function sgc_plugin_options(){
 	global $wpdb;
@@ -111,23 +157,23 @@ function sgc_plugin_options(){
 			// we're updating a record
 			if(isset($_POST['update_record']) && $_POST['update_record'] == 'Y'){
 				 	global $wpdb;
-					$wpdb->update( $sgc_table, array( 'name' => $_POST['name'], 'googlecalcode' => $_POST['googlecalcode'], 'bkgrdImage' => $_POST['bkgrdImage'], 'bkgrdTransparent' => $_POST['bkgrdTransparent'], 'color0' => $_POST['color0'], 'color1' => $_POST['color1'], 'color2' => $_POST['color2'], 'color3' => $_POST['color3'], 'color4' => $_POST['color4'], 'color5' => $_POST['color5'], 'color6' => $_POST['color6'] ), array('id' => $_POST['id']), array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ), array( '%d') );	
+					$wpdb->update( $sgc_table, array( 'name' => $_POST['name'], 'googlecalcode' => $_POST['googlecalcode'], 'bkgrdImage' => $_POST['bkgrdImage'], 'bkgrdTransparent' => $_POST['bkgrdTransparent'], 'color0' => $_POST['color0'], 'color1' => $_POST['color1'], 'color2' => $_POST['color2'], 'color3' => $_POST['color3'], 'color4' => $_POST['color4'], 'color5' => $_POST['color5'], 'color6' => $_POST['color6'], 'bubble_width' => $_POST['bubble_width']  ), array('id' => $_POST['id']), array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ), array( '%d') );	
 					// Put a settings updated message on the screen
-					$msg .=  __( 'Settings saved for calendar: '.$_POST['name'].'.', 'sgc-settings-saved' );
+					$msg .=  __( 'Settings saved for calendar: '.stripslashes($_POST['name']).'.', 'sgc-settings-saved' );
 			
 			//we're creating a new record													
 			} elseif(isset($_POST[ 'new_record' ]) && $_POST[ 'new_record' ] == 'Y' ) {
 					global $wpdb;
-					$wpdb->insert( $sgc_table, array( 'name' => $_POST['name'], 'googlecalcode' => $_POST['googlecalcode'], 'bkgrdImage' => $_POST['bkgrdImage'], 'bkgrdTransparent' => $_POST['bkgrdTransparent'], 'color0' => $_POST['color0'], 'color1' => $_POST['color1'], 'color2' => $_POST['color2'], 'color3' => $_POST['color3'], 'color4' => $_POST['color4'], 'color5' => $_POST['color5'], 'color6' => $_POST['color6'] ), array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ) );
+					$wpdb->insert( $sgc_table, array( 'name' => $_POST['name'], 'googlecalcode' => $_POST['googlecalcode'], 'bkgrdImage' => $_POST['bkgrdImage'], 'bkgrdTransparent' => $_POST['bkgrdTransparent'], 'color0' => $_POST['color0'], 'color1' => $_POST['color1'], 'color2' => $_POST['color2'], 'color3' => $_POST['color3'], 'color4' => $_POST['color4'], 'color5' => $_POST['color5'], 'color6' => $_POST['color6'], 'bubble_width' => $_POST['bubble_width']  ), array( '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ) );
 					// Put a settings saved message on the screen
-					$msg .=  __( 'Calendar successfully created: '.$_POST['name'].'.', 'sgc-settings-saved' );
+					$msg .=  __( 'Calendar successfully created: '.stripslashes($_POST['name']).'.', 'sgc-settings-saved' );
 		
 			//we're deleting a calendar
 			} elseif(isset($_POST[ 'delete_record' ]) && $_POST[ 'delete_record' ] == 'Y' ) {
 						global $wpdb;
 						$wpdb->query( "DELETE FROM $sgc_table WHERE `id` = $_POST[id] LIMIT 1" );
 						// Put a settings saved message on the screen
-						$msg .=  __( 'Calendar deleted: '.$_POST['name'].'.', 'sgc-settings-saved' );
+						$msg .=  __( 'Calendar deleted: '.stripslashes($_POST['name']).'.', 'sgc-settings-saved' );
 			}
 			$msg .= '</strong></p></div>';
 	}
@@ -152,7 +198,7 @@ function sgc_plugin_options(){
 			<p><?php _e("Google Calendar iframe embed code:", 'sgc-google-embed-code' ); ?><br /><textarea name="googlecalcode" cols="44" rows="15" class="required sgccode" id="sgccode0"></textarea></p>
 			<div id="sgc_preview_wrapper0">
 			<div id="new-preview-msg"></div><a href="#" class="sgc_preview" id="new-preview">Preview Calendar</a>
-			<?php $new_src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php?src=en.usa%23holiday%40group.v.calendar.google.com&sgc0=FFFFFF&sgc1=c3d9ff&sgc2=000000&sgc3=e8eef7&sgc4=000000&sgc5=ffffcc&sgc6=000000&sgcImage=0&sgcBkgrdTrans=0&wpurl='.WP_PLUGIN_URL; ?>
+			<?php $new_src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php?src=en.usa%23holiday%40group.v.calendar.google.com&sgc0=FFFFFF&sgc1=c3d9ff&sgc2=000000&sgc3=e8eef7&sgc4=000000&sgc5=ffffcc&sgc6=000000&bubbleWidth=&bubbleUnit=pixel&sgcImage=&sgcImage=0&sgcBkgrdTrans=0&wpurl='.WP_PLUGIN_URL; ?>
 				<div class="sgc_iframe_wrapper" style="display:none;width:800;height:600;">
 					<iframe id="sgc_iframe_0" src="<?php echo $new_src; ?>" allowtransparency="true" style=" border:'0' " width="800" height="600" frameborder="0" scrolling="no"></iframe>
 				</div>
@@ -202,6 +248,10 @@ function sgc_plugin_options(){
 					<td><?php _e("Height:", 'sgc-height' ); ?></td>
 					<td><input type="text" class="sgcWidthOrHeight"  id="height0" name="height" value="" size="6" /></td>
 				</tr>
+				<tr>                                                                                          
+					<td><?php _e("Bubble Width:", 'sgc-bubble' ); ?> <br/><span style="font-size:11px;color:gray;white-space:normal;width:140px;display:block"><em>Event detail popup width in month view (px or %)</em></span></td>
+					<td><input type="text" class="sgcBubble"  id="bubble0" name="bubble_width" value="" size="6" /></td>
+				</tr>
 			</table>
 	
 			<table class="sgc-button-picker" id="button-image-bkgrd_0">
@@ -226,6 +276,13 @@ function sgc_plugin_options(){
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTabs" id="showTabs0" /></td><td><label for="showTabs0">Show Tabs?</label></td></tr>
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showCalendars" id="showCalendars0" /></td><td><label for="showCalendars0">Show Calendars?</label></td></tr>
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTz" id="showTz0" /></td><td><label for="showTz0">Show Timezone?</label></td></tr>
+				<tr class="no-background">
+					<td colspan="2">Language<br />
+					<select id="hl0" class="calLanguage">
+						<?php include "hl.php"; ?>
+					</select>
+					</td>
+				</tr>
 			</table>
 		</div>
 		<p class="submit-new"><input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Add Calendar') ?>" /></p>
@@ -242,14 +299,14 @@ function sgc_plugin_options(){
 
 	foreach ($calendars as $calendar) {
 ?>
-	<h3 class="sgc-name"><?php echo $calendar->name; ?> <br /><span style="font-size:smaller;font-weight:normal">Shortcode: <code>[stout_gc id=<?php echo $calendar->id; ?>]</code><br />Template Tag: <code>&lt;?php echo stout_gc(<?php echo $calendar->id; ?>); ?&gt;</code></span></h3> <?php echo stout_gc($calendar->id,FALSE,TRUE); ?>
+	<h3 class="sgc-name"><?php echo stripslashes($calendar->name); ?> <br /><span style="font-size:smaller;font-weight:normal">Shortcode: <code>[stout_gc id=<?php echo $calendar->id; ?>]</code><br />Template Tag: <code>&lt;?php echo stout_gc(<?php echo $calendar->id; ?>); ?&gt;</code></span></h3> <?php echo stout_gc($calendar->id,FALSE,TRUE); ?>
 	<div id="calendar-<?php echo $calendar->id; ?>" class="sgc-form-wrapper">
 		<form name="form1" method="post" action="" id="sgc-form<?php echo $calendar->id; ?>">
 		<div class="sgc-name-code">
 			<input type="hidden" name="<?php echo $hidden_field_name; ?>" value="Y" />
 			<input type="hidden" name="id" value="<?php echo $calendar->id; ?>" />
 			<input type="hidden" name="update_record" value="Y" />
-			<p><?php _e("Calendar Name:", 'sgc-calendar-name' ); ?><br /><input type="text" name="name" value="<?php echo $calendar->name; ?>" class="required" size="50" /></p>
+			<p><?php _e("Calendar Name:", 'sgc-calendar-name' ); ?><br /><input type="text" name="name" value="<?php echo stripslashes($calendar->name); ?>" class="required" size="50" /></p>
 			<p><?php _e("Google Calendar iframe embed code:", 'sgc-google-embed-code' ); ?><br /><textarea name="googlecalcode" cols="44" rows="15" class="required sgccode" id="sgccode<?php echo $calendar->id; ?>"><?php echo stripslashes($calendar->googlecalcode); ?></textarea></p>
 		</div>	
 		<div class="sgc-pickers">
@@ -295,6 +352,10 @@ function sgc_plugin_options(){
 					<td><?php _e("Height:", 'sgc-height' ); ?></td>
 					<td><input type="text" class="sgcWidthOrHeight" id="height<?php echo $calendar->id; ?>" name="height" value="" size="6"/></td>
 				</tr>
+				<tr>                                                                                          
+					<td><?php _e("Bubble Width:", 'sgc-bubble' ); ?> <br/><span style="font-size:11px;color:gray;white-space:normal;width:140px;display:block"><em>Event detail popup width in month view (px or %); Blank for default; Should be smaller than calendar width</em></span></td>
+					<td><input type="text" class="sgcBubble sgcBubbleSaved"  id="bubble<?php echo $calendar->id; ?>" name="bubble_width" value="<?php echo $calendar->bubble_width; ?>" size="6" /></td>
+				</tr>
 			</table>
 
 			<table class="sgc-button-picker" id="button-image-bkgrd_<?php echo $calendar->id; ?>" style="background:#<?php echo $calendar->color0; ?>">
@@ -319,6 +380,13 @@ function sgc_plugin_options(){
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTabs" id="showTabs<?php echo $calendar->id; ?>" /></td><td><label for="showTabs<?php echo $calendar->id; ?>">Show Tabs?</label></td></tr>
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showCalendars" id="showCalendars<?php echo $calendar->id; ?>" /></td><td><label for="showCalendars<?php echo $calendar->id; ?>">Show Calendars?</label></td></tr>
 				<tr class="no-background"><td><input type="checkbox" class="sgc-toggle-options" name="showTz" id="showTz<?php echo $calendar->id; ?>" /></td><td><label for="showTz<?php echo $calendar->id; ?>">Show Timezone?</label></td></tr>
+				<tr class="no-background">
+					<td colspan="2">Language<br />
+					<select id="hl<?php echo $calendar->id; ?>" class="calLanguage">
+						<?php include "hl.php"; ?>
+					</select>
+					</td>
+				</tr>
 			</table>
 			</div>
 			<p class="submit-update" ><input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Update Calendar') ?>" /></p>
@@ -351,8 +419,6 @@ function stout_gc_func($atts) {
 		'id' => '1',
 		'show_name' => 'FALSE'
 	), $atts));
-
-	//return "id = {$id}";
 	return stout_gc($id,$show_name);
 }
 
@@ -384,15 +450,15 @@ function stout_gc($cal, $showName = 'FALSE'){
 	}
 
 	// Get the width of iframe from google embed code
-	$iframe_width = preg_match('/width="(\d+)"/',$calcode,$matches);
+	$iframe_width = preg_match('/width="(\d+\W?)"/',$calcode,$matches);
 	if($matches[1] != ''){
 		$iframe_width = $matches[1];
 	}else{
 		$errors[] = 'Cannot determine width of the calendar.';
 	}
 
-	// Get the width of iframe from google embed code
-	$iframe_height = preg_match('/height="(\d+)"/',$calcode,$matches);
+	// Get the height of iframe from google embed code
+	$iframe_height = preg_match('/height="(\d+\W?)"/',$calcode,$matches);
 	if($matches[1] != ''){
 		$iframe_height = $matches[1];
 	}else{
@@ -401,24 +467,40 @@ function stout_gc($cal, $showName = 'FALSE'){
 
 	// Get the width of iframe from google embed code
 	$iframe_border = preg_match('/border:(\w+ \w+ #\w+)/',$calcode,$matches);
-	if($matches[1] != ''){
-		$iframe_border = $matches[1];
+	if (count($matches) > 1) {
+		if($matches[1] != ''){
+			$iframe_border = $matches[1];
+		}else{
+			//no border
+			$iframe_border  = '0';
+		}
+	}
+
+	// Check for Bubble Width and determin % or px
+	$bubble = preg_match('/(%)/',$calendar->bubble_width,$unitMatches);
+	if($unitMatches[1]){
+		$bubbleUnit = 'percentage';
 	}else{
-		//no border
-		$iframe_border  = '0';
+		$bubbleUnit = 'pixel';
 	}
 	
+	$bubble = preg_match('/(\d+)/',$calendar->bubble_width,$widthMatches);
+	if($widthMatches[1]){
+		$bubbleWidth = $widthMatches[1];
+	}else{
+		$bubbleWidth = '';
+	}
 		
 	if($errors != ''){
 		$errors = '<div style="padding:10px;border:1px solid red;color:red">'.$errors[0];
-		if( $_SERVER['QUERY_STRING'] == 'page=stout-gc') { $errors .= '<br /><a href="#" class="sgc-form-toggle">Show Calendar Editor</a>'; }
+		if( is_admin() ) { $errors .= '<br /><a href="#" class="sgc-form-toggle">Show Calendar Editor</a>'; }
 		$errors .= '</div>';
 		return $errors;
 	}else{
 		//build src
-		$src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php'.$calquery.'&sgc0='.$calendar->color0.'&sgc1='.$calendar->color1.'&sgc2='.$calendar->color2.'&sgc3='.$calendar->color3.'&sgc4='.$calendar->color4.'&sgc5='.$calendar->color5.'&sgc6='.$calendar->color6.'&sgcImage='.$calendar->bkgrdImage.'&sgcBkgrdTrans='.$calendar->bkgrdTransparent.'&wpurl='.WP_PLUGIN_URL;
+		$src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php'.$calquery.'&sgc0='.$calendar->color0.'&sgc1='.$calendar->color1.'&sgc2='.$calendar->color2.'&sgc3='.$calendar->color3.'&sgc4='.$calendar->color4.'&sgc5='.$calendar->color5.'&sgc6='.$calendar->color6.'&bubbleWidth='.$bubbleWidth.'&bubbleUnit='.$bubbleUnit.'&sgcImage='.$calendar->bkgrdImage.'&sgcBkgrdTrans='.$calendar->bkgrdTransparent.'&wpurl='.WP_PLUGIN_URL;
 		
-		if( $_SERVER['QUERY_STRING'] == 'page=stout-gc' ) {
+		if( is_admin() ) {
 			//in preview mode (admin)
 			$preview = '
 			<div id="sgc_preview_wrapper'.$cal.'">
