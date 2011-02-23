@@ -3,7 +3,7 @@
 	Plugin Name: Stout Google Calendar
 	Plugin URI: http://blog.stoutdesign.com/stout-google-calendar-custom-colors
 	Description: Allows you to customize the colors of embedded Google calendars and update its options through the WordPress admin. Customized Google Calendars may be embedded to your WordPress site by adding a widget, shortcode to a post/page or template tag to your theme.
-	Version: 1.2.0
+	Version: 1.2.1
 	Author: Matt McKenny
 	Author URI: http://www.stoutdesign.com
 	License: GPL2
@@ -30,6 +30,7 @@ global $msg;
 global $wpdb;
 global $sgc_db_version;
 $sgc_db_version = '2.0';
+include_once(ABSPATH . 'wp-includes/pluggable.php'); // Include this to deal with: Fatal error: Call to undefined function wp_get_current_user()
 load_plugin_textdomain( 'stout-gc',null, dirname(__FILE__).'/languages/');
 
 // Create table for Google calendar data and colors

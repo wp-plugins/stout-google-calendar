@@ -108,6 +108,8 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 7. Widget for Stout Google Calendar
 
 == Changelog ==
+= 1.2.1 - 2011-02-23 =
+*		Bugfix: Include 'wp-includes/pluggable.php' to deal with: Fatal error: Call to undefined function wp_get_current_user()
 
 = 1.2.0 - 2011-02-22 =
 *		Use WP_Http class to retrieve calendar from Google. Replaces previous cURL/fopen logic embedded in gcalendar-wrapper.php script.
@@ -161,6 +163,8 @@ Initial Release
 
 
 == Upgrade Notice ==
+= 1.2.1 - 2011-02-23 =
+*		Bugfix: Include 'wp-includes/pluggable.php' to deal with: Fatal error: Call to undefined function wp_get_current_user()
 
 = 1.2.0 - 2011-02-22 =
 *		Use WP_Http class to retrieve calendar from Google. Replaces previous cURL/fopen logic embedded in gcalendar-wrapper.php script.
