@@ -58,7 +58,7 @@ Instead of writing a book trying to explain what each color choice changes in ea
 
 = My calendar looks fine in the admin but asks my site visitors to login, why? =
 
-You calendar must be shared with everyone for any site visitor to see. [Learn how to share your Google Calendar](http://www.google.com/support/calendar/bin/answer.py?answer=37083).
+Your calendar must be shared with everyone for any site visitor to see. [Learn how to share your Google Calendar](http://www.google.com/support/calendar/bin/answer.py?answer=37083).
 
 = Can multiple Google calendars be displayed at once? =
 
@@ -161,6 +161,11 @@ Initial Release
 
 
 == Upgrade Notice ==
+
+= 1.2.0 - 2011-02-22 =
+*		Use WP_Http class to retrieve calendar from Google. Replaces previous cURL/fopen logic embedded in gcalendar-wrapper.php script.
+*		Added internationalization and French translation. Thanks to Bastien Durand for setting this up and translating to French. 
+*		No longer updating plugin via the register_activation_hook() function. 
 
 = 1.1.01 - 2011-02-05 =
 *		Bug Fix: Fixed issue of calendar not displaying when percentage specified for bubble width
