@@ -193,7 +193,7 @@ function sgc_plugin_options(){
 			<p><?php _e("Google Calendar iframe embed code:", 'stout-gc' ); ?><br /><textarea name="googlecalcode" cols="44" rows="15" class="required sgccode" id="sgccode0"></textarea></p>
 			<div id="sgc_preview_wrapper0">
 			<div id="new-preview-msg"></div><a href="#" class="sgc_preview" id="new-preview"><?php _e('Preview Calendar', 'stout-gc');?></a>
-			<?php $new_src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php?src=en.usa%23holiday%40group.v.calendar.google.com&sgc0=FFFFFF&sgc1=c3d9ff&sgc2=000000&sgc3=e8eef7&sgc4=000000&sgc5=ffffcc&sgc6=000000&bubbleWidth=&bubbleUnit=pixel&sgcImage=&sgcImage=0&sgcBkgrdTrans=0&wpurl='.WP_PLUGIN_URL; ?>
+			<?php $new_src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php?src=en.usa%23holiday%40group.v.calendar.google.com&sgc0=FFFFFF&sgc1=c3d9ff&sgc2=000000&sgc3=e8eef7&sgc4=000000&sgc5=ffffcc&sgc6=000000&bubbleWidth=&bubbleUnit=pixel&sgcImage=&sgcImage=0&sgcBkgrdTrans=0'; ?>
 				<div class="sgc_iframe_wrapper" style="display:none;width:800;height:600;">
 					<iframe id="sgc_iframe_0" src="<?php echo $new_src; ?>" allowtransparency="true" style=" border:'0' " width="800" height="600" frameborder="0" scrolling="no"></iframe>
 				</div>
@@ -517,7 +517,7 @@ function stout_gc($cal, $showName = 'FALSE'){
 		return $errors;
 	}else{
 		//build src
-		$src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php'.$calquery.'&sgc0='.$calendar->color0.'&sgc1='.$calendar->color1.'&sgc2='.$calendar->color2.'&sgc3='.$calendar->color3.'&sgc4='.$calendar->color4.'&sgc5='.$calendar->color5.'&sgc6='.$calendar->color6.'&bubbleWidth='.$bubbleWidth.'&bubbleUnit='.$bubbleUnit.'&sgcImage='.$calendar->bkgrdImage.'&sgcBkgrdTrans='.$calendar->bkgrdTransparent.'&wpurl='.WP_PLUGIN_URL;
+		$src = WP_PLUGIN_URL.'/stout-google-calendar/gcalendar-wrapper.php'.$calquery.'&sgc0='.$calendar->color0.'&sgc1='.$calendar->color1.'&sgc2='.$calendar->color2.'&sgc3='.$calendar->color3.'&sgc4='.$calendar->color4.'&sgc5='.$calendar->color5.'&sgc6='.$calendar->color6.'&bubbleWidth='.$bubbleWidth.'&bubbleUnit='.$bubbleUnit.'&sgcImage='.$calendar->bkgrdImage.'&sgcBkgrdTrans='.$calendar->bkgrdTransparent;
 		
 		if( is_admin() ) {
 			//in preview mode (admin)
