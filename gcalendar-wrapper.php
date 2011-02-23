@@ -2,21 +2,18 @@
 
 /**
  * Embedded Google Calendar customization wrapper script created by:
- * @author      Chris Dornfeld <dornfeld (at) unitz.com>
- * @version     $Id: gcalendar-wrapper.php 1571 2010-11-15 07:08:05Z dornfeld $
- * @link        http://www.unitz.com/gcalendar-wrapper/
+ * author      Chris Dornfeld <dornfeld (at) unitz.com>
+ * version     $Id: gcalendar-wrapper.php 1571 2010-11-15 07:08:05Z dornfeld $
  *
  * Extended and adapted for the Stout Google Calendar WordPress plugin by Matt McKenny <sgc (at) stoutdesign.com>
  * Applies a custom color scheme to an embedded Google Calendar.
- *
- */
-
-/**
- * For normal use, no changes are needed below this line
+ * updated 2011-02-22 - Stout Google Calendar v1.2.0
+ * @author Matt McKenny <sgc (at) stoutdesign.com>
  */
 
 define('GOOGLE_CALENDAR_BASE', 'https://www.google.com/');
 define('GOOGLE_CALENDAR_EMBED_URL', GOOGLE_CALENDAR_BASE . 'calendar/embed');
+
 
 /**
  * Construct calendar URL
@@ -30,6 +27,15 @@ if (isset($_SERVER['QUERY_STRING'])) {
 }
 $calUrl = GOOGLE_CALENDAR_EMBED_URL.'?'.$calQuery;
 
+/**
+ * Retrieve calendar embedding code using WP_Http class in WordPress
+ * Thanks to http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress
+ */
+include_once( '../../../wp-load.php' );
+include_once( ABSPATH . WPINC. '/class-http.php' );
+$request = new WP_Http;
+$result = $request->request($calUrl); 
+$calRaw = $result['body'];
 
 /**
  * Set your color scheme below
@@ -62,8 +68,6 @@ if ($bubbleWidth[1] != '') {
 }else {
 	$bubbleCss = '';
 }
-
-
 
 $wpurl = $wpurl[1];
 
@@ -226,58 +230,6 @@ td.dp-cell, td.dp-weekday-selected, td.dp-onmonth-selected {
 EOT;
 
 $calCustomStyle = '<style type="text/css">'.$calCustomStyle.'</style>';
-
-
-/**
- * Retrieve calendar embedding code
- */
-
-$calRaw = '';
-if (in_array('curl', get_loaded_extensions())) {
-	$curlObj = curl_init();
-	curl_setopt($curlObj, CURLOPT_URL, $calUrl);
-	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
-	// trust any SSL certificate (we're only retrieving public data)
-	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, FALSE);
-	curl_setopt($curlObj, CURLOPT_SSL_VERIFYHOST, FALSE);
-	if (function_exists('curl_version')) {
-		$curlVer = curl_version();
-		if (is_array($curlVer)) {
-			if (!in_array('https', $curlVer['protocols'])) {
-				trigger_error("Can't use https protocol with cURL to retrieve Google Calendar", E_USER_ERROR);
-			}
-			if (!empty($curlVer['version']) &&
-				version_compare($curlVer['version'], '7.15.2', '>=') &&
-				!ini_get('open_basedir') && !ini_get('safe_mode')) {
-				// enable HTTP redirect following for cURL:
-				// - CURLOPT_FOLLOWLOCATION is disabled when PHP is in safe mode
-				// - cURL versions before 7.15.2 had a bug that lumped
-				//   redirected page content with HTTP headers
-				// http://simplepie.org/support/viewtopic.php?id=1004
-				curl_setopt($curlObj, CURLOPT_FOLLOWLOCATION, 1);
-				curl_setopt($curlObj, CURLOPT_MAXREDIRS, 5);
-			}
-		}
-	}
-	$calRaw = curl_exec($curlObj);
-	curl_close($curlObj);
-} else if (ini_get('allow_url_fopen')) {
-	if (function_exists('stream_get_wrappers')) {
-		if (!in_array('https', stream_get_wrappers())) {
-			trigger_error("Can't use https protocol with fopen to retrieve Google Calendar", E_USER_ERROR);
-		}
-	} else if (!in_array('openssl', get_loaded_extensions())) {
-		trigger_error("Can't use https protocol with fopen to retrieve Google Calendar", E_USER_ERROR);
-	}
-	// fopen should follow HTTP redirects in recent versions
-	$fp = fopen($calUrl, 'r');
-	while (!feof($fp)) {
-		$calRaw .= fread($fp, 8192);
-	}
-	fclose($fp);
-} else {
-	trigger_error("Can't use cURL or fopen to retrieve Google Calendar", E_USER_ERROR);
-}
 
 /**
  * Insert BASE tag to accommodate relative paths
