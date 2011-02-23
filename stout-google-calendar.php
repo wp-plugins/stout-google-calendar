@@ -3,7 +3,7 @@
 	Plugin Name: Stout Google Calendar
 	Plugin URI: http://blog.stoutdesign.com/stout-google-calendar-custom-colors
 	Description: Allows you to customize the colors of embedded Google calendars and update its options through the WordPress admin. Customized Google Calendars may be embedded to your WordPress site by adding a widget, shortcode to a post/page or template tag to your theme.
-	Version: 1.2.1
+	Version: 1.2.2
 	Author: Matt McKenny
 	Author URI: http://www.stoutdesign.com
 	License: GPL2
@@ -402,6 +402,30 @@ function sgc_plugin_options(){
 <?php
 	//end loop for calendars
  	}
+
+//Check for plugin requirements
+	if( !class_exists( 'WP_Http' ) ) {
+		$wp_http = '<span style="color:red">Sorry, this plugin will not work with WP_Http</span>';
+	}else {
+		$wp_http =  '<span style="color:green">WP_Http present. Looks good.</span>';
+	}
+?>
+	
+	<div style="border-top:1px solid gray;margin-top:20px;padding:20px 0">
+		<a href="http://stoutdesign.com"><img src="https://lh3.googleusercontent.com/_TKDu_kHO3SM/TWVjQJ61cDI/AAAAAAAAAB0/g2iLxc9bodc/Stout-distressed-logo.png" alt="Stout Design" style="float:left;margin-right:20px"/></a>
+		
+		<h3 style="line-height:1.4em">If you find this plugin useful, please <a href="http://wordpress.org/extend/plugins/stout-google-calendar/">rate the Stout Google Calendar</a> plugin.
+			<br/>Questions? Please visit the <a href="http://wordpress.org/tags/stout-google-calendar">Support Forum</a>
+			<br/>Oh, and <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8Y6HL2PMLPQXA">donations are always welcome</a> ;)
+		</h3>
+		
+		<h4>This plugin requires:
+		<br/>WP_Http : <?php echo $wp_http; ?>	
+		</h4>
+		
+	</div>
+	
+<?php
  	
 	// Close wrap div for all content
 	echo '</div>';

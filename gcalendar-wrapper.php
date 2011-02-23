@@ -7,13 +7,12 @@
  *
  * Extended and adapted for the Stout Google Calendar WordPress plugin by Matt McKenny <sgc (at) stoutdesign.com>
  * Applies a custom color scheme to an embedded Google Calendar.
- * updated 2011-02-22 - Stout Google Calendar v1.2.0
+ * updated 2011-02-23 - Stout Google Calendar v1.2.2
  * @author Matt McKenny <sgc (at) stoutdesign.com>
  */
 
 define('GOOGLE_CALENDAR_BASE', 'https://www.google.com/');
 define('GOOGLE_CALENDAR_EMBED_URL', GOOGLE_CALENDAR_BASE . 'calendar/embed');
-
 
 /**
  * Construct calendar URL
@@ -35,7 +34,21 @@ include_once( '../../../wp-load.php' );
 include_once( ABSPATH . WPINC. '/class-http.php' );
 $request = new WP_Http;
 $result = $request->request($calUrl); 
-$calRaw = $result['body'];
+$calRaw = array();
+
+//Handle errors from WP_Http
+if (isset($result->errors)) {
+	// display error message of some sort
+	$err_msg = array_keys($result->errors);
+	$errors = $err_msg[0]."<br/>";
+	foreach($result->errors as $error){
+		$errors .= $error[0]."<br/>";
+	}
+	die('The following error(s) occurred: '.$errors);
+} else {
+	$calRaw = $result['body'];
+}
+
 
 /**
  * Set your color scheme below
@@ -50,7 +63,6 @@ preg_match('/sgc5=(\w+)/',$calQuery,$color5);
 preg_match('/sgc6=(\w+)/',$calQuery,$color6);
 preg_match('/sgcBkgrdTrans=(\d)/',$calQuery,$bkgrdTrans);
 preg_match('/sgcImage=(\d+)/',$calQuery,$sgcImage);
-preg_match('/wpurl=(.+)/',$calQuery,$wpurl);
 preg_match('/bubbleWidth=(\d+)/',$calQuery,$bubbleWidth);
 preg_match('/bubbleUnit=([a-z]*)/',$calQuery,$bubbleUnit);
 
@@ -69,23 +81,21 @@ if ($bubbleWidth[1] != '') {
 	$bubbleCss = '';
 }
 
-$wpurl = $wpurl[1];
-
 switch ($sgcImage[1]) {
 	case 0 :
 		$sgcImage = 'https://calendar.google.com/googlecalendar/images/combined_v18.png';
 		break;
 	case 1 :
 		//gray
-		$sgcImage = $wpurl.'/stout-google-calendar/images/sgc_gray_combined_v18.png';
+		$sgcImage = 'https://lh6.googleusercontent.com/_TKDu_kHO3SM/TWVbgXNbUKI/AAAAAAAAABI/qvChd-AIxh8/sgc_gray_combined_v18.png';
 		break;
 	case 2 :
 		//50% black
-		$sgcImage = $wpurl.'/stout-google-calendar/images/sgc_50black_combined_v18.png';
+		$sgcImage = 'https://lh5.googleusercontent.com/_TKDu_kHO3SM/TWVbgRyKW0I/AAAAAAAAABE/5DSz9dwLiG8/sgc_50black_combined_v18.png';
 		break;
 	case 3 :
 		//50% white
-		$sgcImage = $wpurl.'/stout-google-calendar/images/sgc_50white_combined_v18.png';
+		$sgcImage = 'https://lh4.googleusercontent.com/_TKDu_kHO3SM/TWVbgTKZZHI/AAAAAAAAAA8/6nYyRbAU0yI/sgc_50white_combined_v18.png';
 		break;
 }
 

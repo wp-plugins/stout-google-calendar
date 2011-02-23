@@ -3,8 +3,8 @@ Contributors: stoutdesign
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8Y6HL2PMLPQXA
 Tags: google, calendar, custom, colors, embed, widget, admin, plugin, sidebar
 Requires at least: 3.0
-Tested up to: 3.0.5
-Stable tag: 1.2.1
+Tested up to: 3.1
+Stable tag: 1.2.2
 
 Stout Google Calendar allows you to add and customize the colors and options of embedded Google Calendars directly within the WordPress admin.
 
@@ -108,6 +108,11 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 7. Widget for Stout Google Calendar
 
 == Changelog ==
+= 1.2.2 - 2011-02-23 =
+*		Bugfix: Use hosted calendar images (Fixes problem with url embedded in get request for gcalendar-wrapper.php)
+*		Added a few notes at bottom of plugin settings page
+*		Added error messages for WP_Http
+
 = 1.2.1 - 2011-02-23 =
 *		Bugfix: Include 'wp-includes/pluggable.php' to deal with: Fatal error: Call to undefined function wp_get_current_user()
 
@@ -163,6 +168,11 @@ Initial Release
 
 
 == Upgrade Notice ==
+= 1.2.2 - 2011-02-23 =
+*		Bugfix: Use hosted calendar images (Fixes problem with url embedded in get request for gcalendar-wrapper.php)
+*		Added a few notes at bottom of plugin settings page
+*		Added error messages for WP_Http
+
 = 1.2.1 - 2011-02-23 =
 *		Bugfix: Include 'wp-includes/pluggable.php' to deal with: Fatal error: Call to undefined function wp_get_current_user()
 
