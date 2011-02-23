@@ -3,6 +3,10 @@
  *  This is the widget for the Stout Google Calendar plugin
  */
 
+// Enable internationalisation
+$plugin_dir = dirname(__FILE__);
+load_plugin_textdomain( 'stout-gc','wp-content/plugins/'.$plugin_dir, $plugin_dir);
+
 /**
  * Add function to widgets_init that'll load our widget.
  * @since 0.1
@@ -31,13 +35,13 @@ class Stout_GC_Widget extends WP_Widget {
 	 */
 	function Stout_GC_Widget() {
 		/* Widget settings. */
-		$widget_ops = array( 'classname' => 'stout-gc-widget', 'description' => __('Embed a saved Stout Google Calendar.', 'stout-gc-widget-description') );
+		$widget_ops = array( 'classname' => 'stout-gc-widget', 'description' => __('Embed a saved Stout Google Calendar.', 'stout-gc') );
 
 		/* Widget control settings. */
 		$control_ops = array( 'width' => '100%', 'height' => 350, 'id_base' => 'stout-gc-widget' );
 
 		/* Create the widget. */
-		$this->WP_Widget( 'stout-gc-widget', __('Stout Google Calendar', 'stoutgc-widget-name'), $widget_ops, $control_ops );
+		$this->WP_Widget( 'stout-gc-widget', __('Stout Google Calendar', 'stout-gc'), $widget_ops, $control_ops );
 	}
 
 	/**
@@ -108,9 +112,9 @@ class Stout_GC_Widget extends WP_Widget {
 
 		<!-- Calendar: Select -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'id' ); ?>"><?php _e('Calendar:', 'select_calendar'); ?></label>
+			<label for="<?php echo $this->get_field_id( 'id' ); ?>"><?php _e('Calendar:', 'stout-gc'); ?></label>
 			<select id="<?php echo $this->get_field_id( 'id' ); ?>" name="<?php echo $this->get_field_name( 'id' ); ?>" value="<?php echo $instance['id']; ?> class="widefat" style="width:100%;">
-			<option value="">-- Select Calendar --</option>
+			<option value=""><?php _e('-- Select Calendar --', 'stout-gc');?></option>
 			<?php echo $select_options; ?>
 			</select>
 		</p>

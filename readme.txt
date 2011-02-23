@@ -3,8 +3,8 @@ Contributors: stoutdesign
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8Y6HL2PMLPQXA
 Tags: google, calendar, custom, colors, embed, widget, admin, plugin, sidebar
 Requires at least: 3.0
-Tested up to: 3.0.4
-Stable tag: 1.1.1
+Tested up to: 3.1
+Stable tag: 1.2.2
 
 Stout Google Calendar allows you to add and customize the colors and options of embedded Google Calendars directly within the WordPress admin.
 
@@ -56,6 +56,14 @@ Basically, we really dislike the default colors of embedded Google Calendars - a
 
 Instead of writing a book trying to explain what each color choice changes in each calendar view (Month/Week/Agenda) we decided it would be easier to give you instant feedback when you change a color or option. The best way to do this is add your embed code in the textarea and the click on the "Preview Calendar" link (you may have to tab out of the textarea or click on something else on the page for the link to appear.) Once you see your calendar preview, move it out of the way of the color pickers/options - **Don't close the preview**. While the preview is open, start modifying your calendar colors/options. You'll see the calendar change before your eyes. If the calendar is too big and you can't see the colors/options then you should temporarily change the width & height to about 300, relaunch the preview and continue on. When you are happy with your calendar - **Be sure to click on the 'Add Calendar' or 'Update Calendar' button**.
 
+= My calendar looks fine in the admin but asks my site visitors to login, why? =
+
+Your calendar must be shared with everyone for any site visitor to see. [Learn how to share your Google Calendar](http://www.google.com/support/calendar/bin/answer.py?answer=37083).
+
+= Can multiple Google calendars be displayed at once? =
+
+Yes. Please look at this forum post which describes [how to display multiple calendars at once](http://wordpress.org/support/topic/plugin-stout-google-calendar-display-muliple-calendars-in-one).
+
 = Can multiple calendars be created? =
 
 Yes, you can save multiple calendars each with its own colors, size and options. 
@@ -100,6 +108,18 @@ In short, Matt McKenny at Stout Design for the [Stout Google Calendar](http://bl
 7. Widget for Stout Google Calendar
 
 == Changelog ==
+= 1.2.2 - 2011-02-23 =
+*		Bugfix: Use hosted calendar images (Fixes problem with url embedded in get request for gcalendar-wrapper.php)
+*		Added a few notes at bottom of plugin settings page
+*		Added error messages for WP_Http
+
+= 1.2.1 - 2011-02-23 =
+*		Bugfix: Include 'wp-includes/pluggable.php' to deal with: Fatal error: Call to undefined function wp_get_current_user()
+
+= 1.2.0 - 2011-02-22 =
+*		Use WP_Http class to retrieve calendar from Google. Replaces previous cURL/fopen logic embedded in gcalendar-wrapper.php script.
+*		Added internationalization and French translation. Thanks to Bastien Durand for setting this up and translating to French. 
+*		No longer updating plugin via the register_activation_hook() function. 
 
 = 1.1.01 - 2011-02-05 =
 *		Bug Fix: Fixed issue of calendar not displaying when percentage specified for bubble width
@@ -148,6 +168,18 @@ Initial Release
 
 
 == Upgrade Notice ==
+= 1.2.2 - 2011-02-23 =
+*		Bugfix: Use hosted calendar images (Fixes problem with url embedded in get request for gcalendar-wrapper.php)
+*		Added a few notes at bottom of plugin settings page
+*		Added error messages for WP_Http
+
+= 1.2.1 - 2011-02-23 =
+*		Bugfix: Include 'wp-includes/pluggable.php' to deal with: Fatal error: Call to undefined function wp_get_current_user()
+
+= 1.2.0 - 2011-02-22 =
+*		Use WP_Http class to retrieve calendar from Google. Replaces previous cURL/fopen logic embedded in gcalendar-wrapper.php script.
+*		Added internationalization and French translation. Thanks to Bastien Durand for setting this up and translating to French. 
+*		No longer updating plugin via the register_activation_hook() function. 
 
 = 1.1.01 - 2011-02-05 =
 *		Bug Fix: Fixed issue of calendar not displaying when percentage specified for bubble width
